@@ -18,6 +18,20 @@ public class Main {
         itest.add(1);
         itest.add(100);
 
+        itest.add(99);
+        itest.add(105);
+        itest.add(104);
+        itest.add(103);
+        itest.add(102);
+
+        itest.remove(100);
+        itest.remove(1);
+        itest.remove(104);
+        itest.remove(103);
+        itest.remove(102);
+        itest.remove(99);
+        itest.remove(45);
+
         System.out.print(" 100 ");
         System.out.println(itest.find(100));
 
@@ -32,6 +46,12 @@ public class Main {
 
         System.out.print(" 46 ");
         System.out.println(itest.find(46));
+
+        System.out.print(" 45 ");
+        System.out.println(itest.find(45));
+
+        System.out.print(" 99 ");
+        System.out.println(itest.find(99));
 
         /*Integer a,b;
         a = 50;
