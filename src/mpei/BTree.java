@@ -1,7 +1,7 @@
 package mpei;
 
 import javax.lang.model.type.NullType;
-
+// TODO - Унести функционал из Node в Btree
 public class BTree<DataType extends Comparable> {
     public  BTree(){
         this.root = null;
@@ -29,7 +29,7 @@ public class BTree<DataType extends Comparable> {
             this.data = data;
         }
 
-        public void add(T newData){
+        public void add(T newData){  //unbalanced, fix it!!!
             int compareResult = data.compareTo(newData);
             switch (compareResult){
                 case  -1:           // data < newData //add to right
@@ -74,7 +74,10 @@ public class BTree<DataType extends Comparable> {
                     if (right != null)
                         return right.rm(fd);
                     else break;
-                case 0: return
+                case 0:
+                    this.rm_help()
+                    // this.parent.rm_help(this);
+                    return true;
                 case 1:
                     if (left != null)
                         return left.rm(fd);
@@ -85,9 +88,37 @@ public class BTree<DataType extends Comparable> {
         }
 
         private boolean rm_help(){
-            if (this.left == null && this.right == null) ;
+            // delete this node
+            if (this.left == null && this.right == null){
+                if (this.parent.left == this)
+                    this.parent.left = null;
+                else
+                    this.parent.right = null;
+            }
+            if (this.left != null && this.right != null){ //got both parents
+                int compRes = this.data.compareTo(root.data);
+                switch (compRes){
+                case -1: break;
+                case 0: break;
+                case 1: break;
+                default: throw new RuntimeException();
+                }
+
+            }
+            else{ // got left OR right node
+                if (this.left != null){ //
+                    this.parent.swap(this, this.left)
+                }
+            }
+
         }
 
+        private void swap(Node<T> kid, Node<T> kidskid){
+            if (this.left == kid)
+                this.left = kidskid;
+            else
+                this.right = kidskid;
+        }
         public Node parent;
         public Node left;
         public Node right;
