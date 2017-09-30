@@ -1,9 +1,6 @@
 package mpei;
 
 
-import java.util.Arrays;
-import java.util.List;
-
 public class Main {
 
     public static void main(String[] args) {
@@ -24,13 +21,14 @@ public class Main {
         itest.add(103);
         itest.add(102);
 
-        itest.remove(100);
+        /*itest.remove(100);
         itest.remove(1);
         itest.remove(104);
         itest.remove(103);
         itest.remove(102);
         itest.remove(99);
         itest.remove(45);
+        */
 
         System.out.print(" 100 ");
         System.out.println(itest.find(100));
@@ -52,6 +50,8 @@ public class Main {
 
         System.out.print(" 99 ");
         System.out.println(itest.find(99));
+
+        itest.prettyPrint();
 
         /*Integer a,b;
         a = 50;

@@ -5,10 +5,10 @@ public class BTree<T extends Comparable> {
     public  BTree(){
         this.root = null;
         this.size = 0;
-        //this.depth = 0;
+        //this.height = 0;
     }
     public int getSize(){return size;}
-    //public int getDepth(){return depth;}
+    //public int getDepth(){return height;}
 
     public void add(T d){
         if(root == null)
@@ -35,6 +35,12 @@ public class BTree<T extends Comparable> {
                 break;
             default : throw new RuntimeException();
         }
+        //balance?
+        //int balance = bFactor(n);
+        //if (balance > 1){
+            //if (bFactor(n.left) < 0)
+                //!//leftRotate() fix rotate
+        //}
     }
 
 
@@ -124,41 +130,44 @@ public class BTree<T extends Comparable> {
             root = newNode;
     }
 
-    private int getNullableDepth(Node<T> n){
+    private int getNullableHeight(Node<T> n){
         if (n != null)
-            return n.depth;
+            return n.height;
         else
             return 0;
     }
-    private int bFactor(Node<T> n){return getNullableDepth(n.left) - getNullableDepth(n.right);}
-    private void fixDepth(Node<T> n){
-        int rightDepth = n.right.depth;
-        int leftDepth = n.left.depth;
-        if (leftDepth > rightDepth)
-            n.depth = leftDepth + 1;
+    private int bFactor(Node<T> n){return getNullableHeight(n.left) - getNullableHeight(n.right);}
+    private void fixHeight(Node<T> n){
+        int rightHeight = n.right.height;
+        int leftHeight = n.left.height;
+        if (leftHeight > rightHeight)
+            n.height = leftHeight + 1;
         else
-            n.depth = rightDepth +1;
+            n.height = rightHeight +1;
     }
 
     private Node<T> rightRotate(Node<T> n){
         Node<T> tmp = n.left;
         n.left = tmp.right;
         tmp.right = n;
-        fixDepth(n);
-        fixDepth(tmp);
+        fixHeight(n);
+        fixHeight(tmp);
         return tmp;
     }
     private Node<T> leftRotate (Node<T> n){
-        Node<T> tmp=n.right;
+        Node<T> tmp = n.right;
         n.right=tmp.left;
         tmp.left=n;
-        fixDepth(n);
-        fixDepth(tmp);
+        // TODO: add parent-pointers fix
+        // https://gist.github.com/danicat/7075125
+        fixHeight(n);
+        fixHeight(tmp);
         return tmp;
     }
 
+
     private Node<T> balance(Node<T> p){
-        fixDepth(p);
+        fixHeight(p);
         if(bFactor(p)==2){
             if(bFactor(p.right)<0)
                 p.right= rightRotate(p.right);
@@ -173,9 +182,65 @@ public class BTree<T extends Comparable> {
     }
 
 
+    public void printTree(){
+        if (this.getSize() == 0){
+            System.out.println("Empty tree");
+        }
+        else
+            printTree(root);
+    }
+
+    private void printTree(Node<T> n){
+        if (n != null){
+            //System.out.println("Parent node: ");
+            printTree(n.left);
+            System.out.println(n.data);
+            printTree(n.right);
+        }
+    }
+
+    public void clear(){
+        this.root = null;
+        this.size = 0;
+    }
+
+    public void prettyPrint(){
+        if (root == null) return;
+        System.out.println(root.data);
+        recPrettyPrint(root);
+    }
+    private void recPrettyPrint(Node<T> node){ //meh-result, should do it non-recursivly
+        System.out.println();
+        if (node.left != null)
+            System.out.print(node.left.data);
+        System.out.print("    ");
+        if (node.right != null)
+        System.out.print(node.right.data);
+
+        if (node.left != null)
+            recPrettyPrint(node.left);
+        if (node.right != null)
+            recPrettyPrint(node.right);
+    }
+
+    public void printSubtree( int indent, Node<T> node) {
+
+
+    }
+    public void pp_calc(){
+        root.line = 0;
+        calculateDepthLines(root);
+
+    }
+    public void calculateDepthLines(Node<T> n){
+        n.line = n.parent.line + 1;
+        calculateDepthLines(n.left);
+        calculateDepthLines(n.right);
+    }
+
     private Node<T> root;
     private int size;
-    //private int depth;
+    //private int height;
 
     private class Node<D extends Comparable> {
         public Node(Node parent, D data){
@@ -183,7 +248,8 @@ public class BTree<T extends Comparable> {
             this.right = null;
             this.parent = parent;
             this.data = data;
-            this.depth = 0;
+            this.height = 1;
+            this.line = -1;
         }
 
         public void swap(Node<D> kid, Node<D> kidskid){
@@ -208,7 +274,8 @@ public class BTree<T extends Comparable> {
         public Node parent;
         public Node left;
         public Node right;
-        public int depth;
+        public int height;
+        public int line;
         public D data;
     }
 
