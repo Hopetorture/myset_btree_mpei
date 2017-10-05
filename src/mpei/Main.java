@@ -1,6 +1,9 @@
 package mpei;
 
 
+import java.util.Iterator;
+
+//TODO intersect, union,
 public class Main {
 
     public static void main(String[] args) {
@@ -21,53 +24,64 @@ public class Main {
         itest.add(103);
         itest.add(102);
 
-        /*itest.remove(100);
-        itest.remove(1);
-        itest.remove(104);
-        itest.remove(103);
-        itest.remove(102);
-        itest.remove(99);
-        itest.remove(45);
-        */
+        System.out.println(itest.getRootData());
+        System.out.println("root data^");
+//        itest.remove(100);
+//        itest.remove(1);
+//        itest.remove(104);
+//        itest.remove(103);
+//        itest.remove(102);
+//        itest.remove(99);
+//        itest.remove(45);
 
-        System.out.print(" 100 ");
-        System.out.println(itest.find(100));
+//
+//        System.out.print(" 100 ");
+//        System.out.println(itest.find(100));
+//
+//        System.out.print(" 101 ");
+//        System.out.println(itest.find(101));
+//
+//        System.out.print(" 1 ");
+//        System.out.println(itest.find(1));
+//
+//        System.out.print(" 45 ");
+//        System.out.println(itest.find(45));
+//
+//        System.out.print(" 46 ");
+//        System.out.println(itest.find(46));
+//
+//        System.out.print(" 45 ");
+//        System.out.println(itest.find(45));
+//
+//        System.out.print(" 99 ");
+//        System.out.println(itest.find(99));
 
-        System.out.print(" 101 ");
-        System.out.println(itest.find(101));
+        //itest.prettyPrint();
 
-        System.out.print(" 1 ");
-        System.out.println(itest.find(1));
+        //System.out.println("Array print: ");
+        //itest.printArray();
 
-        System.out.print(" 45 ");
-        System.out.println(itest.find(45));
-
-        System.out.print(" 46 ");
-        System.out.println(itest.find(46));
-
-        System.out.print(" 45 ");
-        System.out.println(itest.find(45));
-
-        System.out.print(" 99 ");
-        System.out.println(itest.find(99));
-
-        itest.prettyPrint();
-
-        /*Integer a,b;
-        a = 50;
-        b = 10;
-        int res = a.compareTo(b);
-        System.out.println(res); // a < b  => -1;  a > b => 1; a=b => 0
-        */
-        /*
-        BTreeSet<Integer> itest = new BTreeSet<Integer>();
-        itest.test(10,20);
-        BTreeSet<String> stest = new BTreeSet<String>();
-        stest.test("abc", "abc");
-        List<Integer> lint = Arrays.asList(5, 6, 7, 8, 9, 10);
-        */
-
-
-
+        System.out.println("Iterator print: ");
+//        Iterator<Integer> iter = itest.iterator();
+//        while (iter.hasNext()){
+//            System.out.println(iter.next());
+//        }
+///*        for (int i : itest){ //bug with remove and iterators TODO: fix iterators and remove bug
+///*            System.out.println(i);
+///*        }
+        itest.printBalance(itest.getRoot());
+        //try {
+            BTree<Integer> otherTree = new BTree<>();
+            otherTree.add(5);
+            otherTree.add(15);
+            otherTree.add(55);
+            otherTree.add(150);
+            BTree<Integer> resultTree = itest.union(otherTree);
+            resultTree.printArray();
+            for (int i : resultTree)
+                System.out.println(i);
+            resultTree.printBalance(resultTree.getRoot());
+        //}
+        //catch (Exception e){System.out.println(e.getStackTrace());}
     }
 }
