@@ -1,7 +1,7 @@
 package mpei;
 
 
-import java.util.Iterator;
+//import java.util.Iterator;
 
 //TODO intersect, union,
 public class Main {
@@ -66,7 +66,7 @@ public class Main {
 //        while (iter.hasNext()){
 //            System.out.println(iter.next());
 //        }
-///*        for (int i : itest){ //bug with remove and iterators TODO: fix iterators and remove bug
+///*        for (int i : itest){ //bug with remove and iterators
 ///*            System.out.println(i);
 ///*        }
         itest.printBalance(itest.getRoot());
@@ -77,10 +77,16 @@ public class Main {
             otherTree.add(55);
             otherTree.add(150);
             BTree<Integer> resultTree = itest.union(otherTree);
-            resultTree.printArray();
+            //resultTree.printArray();
             for (int i : resultTree)
                 System.out.println(i);
             resultTree.printBalance(resultTree.getRoot());
+
+        //resultTree.fixLevels(resultTree.getRoot());
+        //resultTree.printLevels(resultTree.getRoot());
+
+        //itest.fixLevels(itest.getRoot());
+        //itest.printLevels(itest.getRoot());
         //}
         //catch (Exception e){System.out.println(e.getStackTrace());}
     }

@@ -1,14 +1,12 @@
 package mpei;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
-// TODO - Унести функционал из Node в Btree
+
 public class BTree<T extends Comparable> implements Iterable<T> {
     public  BTree(){
         this.root = null;
         this.size = 0;
-        //this.height = 0;
     }
 
     @Override
@@ -17,7 +15,6 @@ public class BTree<T extends Comparable> implements Iterable<T> {
     }
 
     public int getSize(){return size;}
-    //public int getDepth(){return height;}
 
     public void add(T d){
         if(root == null)
@@ -48,18 +45,11 @@ public class BTree<T extends Comparable> implements Iterable<T> {
             default : throw new RuntimeException();
         }
         balance(n);
-        //balance?
-        //int balance = bFactor(n);
-        //if (balance > 1){
-            //if (bFactor(n.left) < 0)
-                //!//leftRotate() fix rotate
-        //}
     }
 
 
-    public boolean find(T d){
-        if (root == null) return false;
-        return rFind(root, d);
+    public boolean find(T d) {
+        return root != null && rFind(root, d);
     }
 
     private boolean rFind(Node<T> n, T fd){
@@ -82,7 +72,6 @@ public class BTree<T extends Comparable> implements Iterable<T> {
 
     public boolean remove(T fd){ //should try-catch here;
         if (root != null){
-            size--;
             return this.rm(root, fd);
         }
         else return false;
@@ -96,6 +85,7 @@ public class BTree<T extends Comparable> implements Iterable<T> {
                 else break;
             case 0:
                 rm_help(n);
+                size --;
                 return true;
             case 1:
                 if (n.left != null)
@@ -105,8 +95,8 @@ public class BTree<T extends Comparable> implements Iterable<T> {
         }
         return false;
     }
-    //bug - if removes root
-    private void rm_help(Node<T> n){ // fix deletion of elements
+
+    private void rm_help(Node<T> n){
         System.out.println("removing object: ");
         System.out.println(n.data);
         if (n.left == null && n.right == null){
@@ -116,7 +106,6 @@ public class BTree<T extends Comparable> implements Iterable<T> {
                 n.parent.right = null;
         }
         if (n.left != null && n.right != null){ //got both parents
-            //! cycle-traversal
             Node<T> iter;
             iter = n.right;
             while (iter.left != null){
@@ -164,10 +153,11 @@ public class BTree<T extends Comparable> implements Iterable<T> {
                 return n.height;
             else
                 return 0;
-        }catch (Exception e){System.out.println(e.getLocalizedMessage().toString()); System.out.println("getNullable caught");}
+        }catch (Exception e){System.out.println("getNullable caught");}
         return 0;
     }
     private int bFactor(Node<T> n){
+        if (n == null) return 0;
         try{
         return getNullableHeight(n.left) - getNullableHeight(n.right);
         }catch (Exception e){
@@ -197,126 +187,93 @@ public class BTree<T extends Comparable> implements Iterable<T> {
     }
 
     private void rightRotate(Node<T> n){
-        if (n == null) return;
-        Node<T> tmp = n.left;
-        n.left = tmp.right;
-        tmp.right = n;
-        fixHeight(n);
-        fixHeight(tmp);
+        try {
+            if (n == null) return;
+            Node<T> newroot = n.left;
+            n.left = newroot.right;
+            newroot.right = n;
+
+            if (n.parent == null) {
+                root = newroot;
+                newroot.parent = null;
+            } else {
+                if (n.parent.left == n) {
+                    n.parent.left = newroot;
+                } else {
+                    n.parent.right = newroot;
+                }
+                newroot.parent = n.parent;
+            }
+            n.parent = newroot;
+            fixHeight(n);
+            fixHeight(newroot);
+        }//try
+        catch(Exception e){
+            System.out.println("caught in right rotate");
+        }
     }
-    private void leftRotate (Node<T> n){ // root rotation special case
+    private void leftRotate (Node<T> n){
         if (n == null) return;
-        Node<T> tmp = n.right;
-        n.right=tmp.left;
-        tmp.left=n;
-        // TODO: add parent-pointers fix
-        // https://gist.github.com/danicat/7075125
+        Node<T> newroot = n.right;
+        n.right = newroot.left;
+        newroot.left = n;
+
+        if (n.parent == null){
+            root = newroot;
+            newroot.parent = null;
+        }
+        else{
+            if( n.parent.left == n ){
+                n.parent.left = newroot;
+            }
+            else {
+                n.parent.right = newroot;
+             }
+            newroot.parent = n.parent;
+        }
+        n.parent = newroot;
         fixHeight(n);
-        fixHeight(tmp);
+        fixHeight(newroot);
     }
+
+
     private void balance(Node<T> p){
         if (p == null)return;
-
-    try {
-        fixHeight(p);
-        if (bFactor(p) == 2) {
-            if (bFactor(p.right) < 0)
-                rightRotate(p.right);
-            leftRotate(p);
-        }
-        if (bFactor(p) == -2) {
-            if (bFactor(p.left) > 0)
-                leftRotate(p.left);
-            rightRotate(p);
-        }
-        fixParents(root);
-    }
-    catch (Exception e) {
+        try {
+            fixHeight(p);
+            if (bFactor(p) > 1){ // левое поддерево несбалансировано
+                if(bFactor(p.left) < 0)// из-за правого потомка левого дерева
+                    leftRotate(p.left); // двойной поворот
+                rightRotate(p);
+            }//if
+            else if (bFactor(p) < -1){// правое поддерево
+                if (bFactor(p.right) > 0) //из-за левого потомка правого дерева
+                    rightRotate(p.right);
+                leftRotate(p);
+            }//elif
+            fixParents(root);
+        }//try
+        catch (Exception e) {
         System.out.println("Caught in balance()");
         StackTraceElement[] strace = e.getStackTrace();
-        for (int i = 0; i < strace.length; i++)
-            System.out.println(strace[i]);
-
-        System.out.println(p);
-        System.out.println(p.data);
-    }
-    }
-
-    public void printTree(){
-        if (this.getSize() == 0){
-            System.out.println("Empty tree");
-        }
-        else
-            printTree(root);
-    } // should I use it? or stick with iterators?
-    private void printTree(Node<T> n){
-        if (n != null){
-            //System.out.println("Parent node: ");
-            printTree(n.left);
-            System.out.println(n.data);
-            printTree(n.right);
-        }
-    }
+        for (StackTraceElement aStrace : strace)
+            System.out.println(aStrace);
+        }//catch
+    }//balance
 
     public void clear(){
         this.root = null;
         this.size = 0;
     }
 
-//    public void prettyPrint(){
-////        if (root == null) return;
-////        System.out.println(root.data);
-////        recPrettyPrint(root);
-//    }
-//    private void recPrettyPrint(Node<T> node){ //meh-result, should do it non-recursivly
-////        System.out.println();
-////        if (node.left != null)
-////            System.out.print(node.left.data);
-////        System.out.print("    ");
-////        if (node.right != null)
-////        System.out.print(node.right.data);
-////
-////        if (node.left != null)
-////            recPrettyPrint(node.left);
-////        if (node.right != null)
-////            recPrettyPrint(node.right);
-//    }
-    //*experimental
-    public void pp_calc(){ // abandon idea?
-        root.line = 0;
-        calculateDepthLines(root);
-
-    }
-    public void calculateDepthLines(Node<T> n){
-        n.line = n.parent.line + 1;
-        calculateDepthLines(n.left);
-        calculateDepthLines(n.right);
-    }
-    //*experimental
-    public ArrayList<Node<T>> toList(Node<T> node, ArrayList<Node<T>> result){
-        if (node != null){
-            result.add(node);
-            toList(node.left, result);
-            toList(node.right,result);
-        }
-        return result;
-    }
-    public void printArray(){
-        ArrayList<Node<T>> res = new ArrayList<>();
-        toList(root, res);
-        for (int i = 0; i < res.size(); i++){
-            System.out.println(res.get(i).data);
-        }
-    }
-    // should I remove toList or change it?
 
     public void printBalance(Node<T> node){
         if (node != null){
             System.out.print("Node balance: ");
             System.out.println(bFactor(node));
             int bf = bFactor(node);
-            System.out.print("root:");
-            System.out.println(root.data);
+            System.out.print("node:");
+            System.out.println(node.data);
             if (bf > 1 || bf < -1){
                 System.out.print("erroneus data:");
                 System.out.println(node.data);
@@ -328,120 +285,61 @@ public class BTree<T extends Comparable> implements Iterable<T> {
     public Node<T> getRoot(){return root;}// for debug
     public T getRootData(){return root.data;}// for debug
 
-    private Node<T> root;
+    private Node<T> root; //root ptr in BTree
     private int size;
 
     private class Node<D extends Comparable> {
-        public Node(Node parent, D data){
+         Node(Node parent, D data){
             this.left = null;
             this.right = null;
             this.parent = parent;
             this.data = data;
             this.height = 1;
-            this.line = -1;
             this.visitCount = -1;
-        }
-//        public Node(Node other){
-//            // do I even need this ?
-//        }
+         }
 
-        public void swap(Node<D> kid, Node<D> kidskid){
+        void swap(Node<D> kid, Node<D> kidskid){
             if (this.left == kid)
                 this.left = kidskid;
             else
                 this.right = kidskid;
         }
 
-        public void setRef(Node<D> target, Node<D> newValue){
+        void setRef(Node<D> target, Node<D> newValue){
             if (this.left == target)
                 this.left = newValue;
-            else
-            if (this.right == target)
+            else if (this.right == target)//elif
                 this.right = newValue;
             else{
                 System.out.println("illegal delete");
                 throw new RuntimeException();
-            }
-        }
-//        public void copy (Node<D> oldNode, Node<D> newNode){
-//            if (oldNode.left != null){
-//                newNode.left = new Node<>(oldNode.left.parent, oldNode.left.data);
-//                copy();
-//
-//            }
-//
-//        }
+            }//else
+        }//setRef
 
-        public Node parent;
-        public Node left;
-        public Node right;
-        public int height;
-        public int line;
-        public int visitCount;
-        public D data;
+
+        Node parent;
+        Node left;
+        Node right;
+        int height;
+        int visitCount;
+        final D data;
     }
 
-//    private class nodeIterator<Type extends Comparable> implements Iterator<Type>{
-//        public nodeIterator(){
-//            int rvc = root.visitCount;
-//            if (rvc == -1 || rvc > 100){
-//                root.visitCount = 1;
-//            }
-//            currentVisited = root.visitCount;
-//            root.visitCount++;
-//        }
-//        public boolean hasNext(){
-//            if (hasNextCounter != getSize())
-//                return true;
-//            return false;
-//        }
-//        public Type next(){return null;}
-//        private Type recNext(Type node){
-//            if (node == null) return null;
-//            if(()node.visitCount != currentVisited){
-//                node.visitCount = currentVisited;
-//                return node.data;
-//            }
-//            Type data = (Type) recNext(node.left); //return?
-//            if (data != null)
-//                return data;
-//
-//            data = (Type)recNext(node.right);
-//            if (data != null)
-//                return data;
-//
-//            return null;
-//        }
-//
-//        private Type returnRoot(){
-//            if(!rootReturned){
-//                rootReturned = true;
-//                return (Type)root;
-//            }
-//            return null;
-//        }
-//        public void remove(){throw new RuntimeException("unsupported operation");}
-//
-//        private int currentVisited;
-//        private int hasNextCounter = 0;
-//        private boolean rootReturned = false;
-//    }
-    //^^Node Iterator
     //****DATA-Iterator
     private class mIterator<Type extends Comparable> implements Iterator<Type>{
-     public mIterator(){
+     mIterator(){
          int rvc = root.visitCount;
          if (rvc == -1 || rvc > 100){
              root.visitCount = 1;
          }
          currentVisited = root.visitCount;
          root.visitCount++;
-     }
+     }//ctor
+
      public boolean hasNext(){
-         if (hasNextCounter != getSize())
-             return true;
-         return false;
-     }
+         return hasNextCounter != getSize();
+     }//hasNext
+
      public Type next(){ // do with pop root
          hasNextCounter++;
          Type returnData = (Type)recNext(root.left);
@@ -457,8 +355,8 @@ public class BTree<T extends Comparable> implements Iterable<T> {
              return returnData;
 
          throw new IndexOutOfBoundsException("AVL Tree out of bound exception! Use .hasNext()!!!");
+     }//next
 
-     }
      private Type recNext(Node<Type> node){
          if (node == null) return null;
          if(node.visitCount != currentVisited){
@@ -474,23 +372,22 @@ public class BTree<T extends Comparable> implements Iterable<T> {
              return data;
 
          return null;
-     }
+     }//recNext
+
      private Type returnRoot(){
          if(!rootReturned){
             rootReturned = true;
             return (Type)root.data;
          }
          return null;
-     }
-//     public Node<Type> nextNode(){
-//        return null;
-//     }
+     }//returnRoot
+
      public void remove(){
          throw new RuntimeException("unsupported operation");
      }
-        private int currentVisited;
-        private int hasNextCounter = 0;
-        private boolean rootReturned = false;
-    }
+     private int currentVisited;
+     private int hasNextCounter = 0;
+     private boolean rootReturned = false;
+    }//mIterator class
 
-}
+}//BTree class

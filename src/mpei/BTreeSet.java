@@ -24,10 +24,7 @@ public class BTreeSet<T extends Comparable> {
     }
 
     public boolean isEmpty(){
-        if (size > 0){
-            return false;
-        }
-        return true;
+        return size <= 0;
     }
 
     public void clear(){}
