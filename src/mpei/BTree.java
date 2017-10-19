@@ -17,10 +17,14 @@ public class BTree<T extends Comparable> implements Iterable<T> {
     public int getSize(){return size;}
 
     public void add(T d){
-        if(root == null)
+        if(root == null) {
             root = new Node<>(null, d);
-        else
+            size++;
+        }
+        else{
             rAdd(root, d);
+            fixParents(root);
+        }
     }
     private void rAdd(Node<T> n, T newData){
         int compareResult = n.data.compareTo(newData);
@@ -72,6 +76,15 @@ public class BTree<T extends Comparable> implements Iterable<T> {
 
     public boolean remove(T fd){ //should try-catch here;
         if (root != null){
+            if (root.data == fd){
+                Node<T> dummyroot = new Node<>(null, null);
+                dummyroot.left = root;
+                rm_help(dummyroot.left);
+                root = dummyroot.left;
+                fixParents(root);
+                size --;
+                return true;
+            }
             return this.rm(root, fd);
         }
         else return false;
@@ -86,6 +99,7 @@ public class BTree<T extends Comparable> implements Iterable<T> {
             case 0:
                 rm_help(n);
                 size --;
+                fixParents(root);
                 return true;
             case 1:
                 if (n.left != null)
@@ -136,6 +150,19 @@ public class BTree<T extends Comparable> implements Iterable<T> {
             result.add(thisIter.next());
         while (otherIter.hasNext())
             result.add(otherIter.next());
+        return result;
+    }
+
+    public <C extends Iterable> BTree<T> intersect(C other){
+        //Iterator<T> thisIter = this.iterator();
+        Iterator<T> otherIter = other.iterator();
+        BTree<T> result = new BTree<>();
+        while (otherIter.hasNext()){
+            T data = otherIter.next();
+            if (this.find(data)){
+                result.add(data);
+            }
+        }
         return result;
     }
 
