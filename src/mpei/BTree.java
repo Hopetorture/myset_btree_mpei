@@ -373,11 +373,7 @@ public class BTree<T extends Comparable> implements Iterable<T> {
      }//ctor
 
      public boolean hasNext(){
-
-         //return hasNextCounter != getSize();
-         if (hasNextCounter != getSize())
-             return true;
-         else return false;
+         return hasNextCounter != getSize();
      }//hasNext
 
      public Type next(){ // do with pop root
@@ -394,11 +390,6 @@ public class BTree<T extends Comparable> implements Iterable<T> {
          if (returnData != null)
              return returnData;
 
-         System.out.println("balance: ");
-         printBalance(root);
-         System.out.println("iter: ");
-         System.out.println(hasNextCounter);
-         System.out.println(getSize());
          throw new IndexOutOfBoundsException("AVL Tree out of bound exception! Use .hasNext()!!!");
      }//next
 
