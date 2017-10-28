@@ -1,32 +1,21 @@
 package mpei;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 //import java.util.Iterator;
 class autoTests{
     autoTests(){
         BTree<Integer> itest = new BTree<>();
-        itest.add(50);
-        itest.add(45);
-        itest.add(5);
-        itest.add(1);
-        itest.add(100);
 
-        itest.add(99);
-        itest.add(105);
-        itest.add(104);
-        itest.add(103);
-        itest.add(102);
+        itest.add(new ArrayList<>(Arrays.asList(50,45,5,1,100,99,105,104,103,102)));
 
-        System.out.println(itest.getRootData());
-        System.out.println("root data^");
-        itest.remove(100);
         itest.remove(1);
         itest.remove(102);
         itest.remove(99);
         itest.remove(45);
-
 
         System.out.print(" 100 ");
         System.out.println(itest.find(100));
@@ -50,15 +39,12 @@ class autoTests{
         System.out.println(itest.find(99));
 
         System.out.println("Iterator print: ");
-//        Iterator<Integer> iter = itest.iterator();
-//        while (iter.hasNext()){
-//            System.out.println(iter.next());
-//        }
-        for (int i : itest){ //bug with remove and iterators
+
+        for (int i : itest){
             System.out.println(i);
         }
         itest.printBalance(itest.getRoot());
-        //try {
+
         BTree<Integer> otherTree = new BTree<>();
         otherTree.add(5);
         otherTree.add(15);
@@ -68,7 +54,7 @@ class autoTests{
         System.out.println("Union:");
         for (int i : resultTree)
             System.out.println(i);
-        resultTree.printBalance(resultTree.getRoot());
+        //resultTree.printBalance(resultTree.getRoot());
 
         BTree<Integer> intersectTree = itest.intersect(otherTree);
         System.out.println("Intersect test:");
@@ -93,8 +79,8 @@ public class Main {
             System.out.println("7. Запустить авто тесты");
             System.out.println("8. Выход");
             Scanner in = new Scanner(System.in);
-            //int menupoint = in.nextInt();
-            int menupoint = 7;
+            int menupoint = in.nextInt();
+            //int menupoint = 7;
             switch (menupoint){
                 case 1: //new tree
                     mainTree = new BTree<>();

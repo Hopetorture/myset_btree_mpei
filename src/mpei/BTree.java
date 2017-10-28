@@ -26,6 +26,11 @@ public class BTree<T extends Comparable> implements Iterable<T> {
             fixParents(root);
         }
     }
+    public void add (Iterable<T> itbl){
+        for (T t : itbl){
+            this.add(t);
+        }
+    }
     private void rAdd(Node<T> n, T newData){
         int compareResult = n.data.compareTo(newData);
         switch (compareResult){
@@ -82,6 +87,7 @@ public class BTree<T extends Comparable> implements Iterable<T> {
                 rm_help(dummyroot.left);
                 root = dummyroot.left;
                 fixParents(root);
+                balance(root);
                 size --;
                 return true;
             }
@@ -113,12 +119,14 @@ public class BTree<T extends Comparable> implements Iterable<T> {
     private void rm_help(Node<T> n){
         System.out.println("removing object: ");
         System.out.println(n.data);
+
         if (n.left == null && n.right == null){
             if (n.parent.left == n)
                 n.parent.left = null;
             else
                 n.parent.right = null;
         }
+        else
         if (n.left != null && n.right != null){ //got both parents
             Node<T> iter;
             iter = n.right;
@@ -309,6 +317,7 @@ public class BTree<T extends Comparable> implements Iterable<T> {
             printBalance(node.right);
         }
     }
+
     public Node<T> getRoot(){return root;}// for debug
     public T getRootData(){return root.data;}// for debug
 
@@ -364,7 +373,11 @@ public class BTree<T extends Comparable> implements Iterable<T> {
      }//ctor
 
      public boolean hasNext(){
-         return hasNextCounter != getSize();
+
+         //return hasNextCounter != getSize();
+         if (hasNextCounter != getSize())
+             return true;
+         else return false;
      }//hasNext
 
      public Type next(){ // do with pop root
@@ -373,7 +386,7 @@ public class BTree<T extends Comparable> implements Iterable<T> {
          if (returnData != null)
              return returnData;
 
-         returnData  = returnRoot();
+             returnData  = returnRoot();
          if (returnData != null)
              return returnData;
 
@@ -381,6 +394,11 @@ public class BTree<T extends Comparable> implements Iterable<T> {
          if (returnData != null)
              return returnData;
 
+         System.out.println("balance: ");
+         printBalance(root);
+         System.out.println("iter: ");
+         System.out.println(hasNextCounter);
+         System.out.println(getSize());
          throw new IndexOutOfBoundsException("AVL Tree out of bound exception! Use .hasNext()!!!");
      }//next
 
